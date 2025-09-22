@@ -1,3 +1,5 @@
+# Project dependencies
+
 # Web Framework
 fastapi
 
@@ -7,5 +9,20 @@ uvicorn[standard]
 # Database Object-Relational Mapper (ORM)
 sqlalchemy
 
-# MySQL Database Driver (for connecting to your relational DB)
-PyMySQL
+# black: Automatic Python code formatter to maintain a consistent style.
+black
+
+# flake8: Tool to analyze code and detect style and quality errors.
+flake8
+
+# pytest: Framework for writing and running unit tests in Python.
+pytest
+
+# python-dotenv: Loads environment variables from .env files.
+python-dotenv
+
+# python-json-logger: Logging extension to format logs in JSON.
+python-json-logger
+
+# mysql-connector-python: Driver to connect Python applications with MySQL databases.
+mysql-connector-python
