@@ -26,3 +26,15 @@ python-json-logger
 
 # mysql-connector-python: Driver to connect Python applications with MySQL databases.
 mysql-connector-python
+
+# Driver para conectar con MySQL
+pymysql           
+
+# Para validación de datos y emails
+pydantic[email]  
+
+# Para hashear contraseñas de forma segura  
+passlib[bcrypt]    
+
+# Para manejar los JWT (JSON Web Tokens)
+python-jose[cryptography] 
