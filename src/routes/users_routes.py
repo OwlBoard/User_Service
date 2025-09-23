@@ -5,7 +5,7 @@ from src.database import get_db
 from passlib.context import CryptContext
 from src.models import User
 
-router = APIRouter(prefix="/api/users", tags=["Users"])
+router = APIRouter(tags=["Users"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_password_hash(password: str) -> str:
