@@ -1,6 +1,6 @@
 # src/database.py
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
 # Deberías cargar esto desde tu config.py o variables de entorno
@@ -8,6 +8,8 @@ DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://user:password@mysql_db
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
 
 # Función para obtener una sesión de BD en cada request
 def get_db():

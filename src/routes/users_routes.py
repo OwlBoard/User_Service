@@ -68,7 +68,7 @@ def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depends(ge
     return db_user
 
 # DELETE /users/{user_id}?hard=<bool>
-@router.delete("/users/{user_id}", status_code=status.HTTP_200_OK)
+@router.delete("/{user_id}", status_code=status.HTTP_200_OK)
 def delete_user(user_id: int, hard: bool = False, db: Session = Depends(get_db)):
     """
     Elimina un usuario.

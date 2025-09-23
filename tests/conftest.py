@@ -1,37 +1,61 @@
-# tests/conftest.py
-
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
-
-from app import app
-from src.database import get_db
 from src.models import Base
-from src.models import User  # <-- ESTA LÍNEA ES CRUCIAL
+from app import app  # Tu FastAPI app
+from src.database import get_db  # La dependencia de FastAPI para la DB
 
-# --- Configuración de la Base de Datos de Prueba ---
-SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+# ----------------------------
+# Base de datos de test
+# ----------------------------
+TEST_DATABASE_URL = "sqlite:///./test.db"
+engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# --- Sobrescritura de la Dependencia `get_db` ---
-def override_get_db():
-    try:
-        db = TestingSessionLocal()
-        yield db
-    finally:
-        db.close()
+# ----------------------------
+# Fixture para crear la base de datos
+# ----------------------------
+@pytest.fixture(scope="session", autouse=True)
+def create_test_database():
+    inspector = inspect(engine)
+    print("Tablas antes de create_all:", inspector.get_table_names())
 
-app.dependency_overrides[get_db] = override_get_db
-
-# --- Creación de un Cliente de Prueba ---
-@pytest.fixture(scope="function")
-def client():
-    # Esta línea ahora funcionará porque la importación de 'User'
-    # aseguró que Base.metadata conozca la tabla 'users'.
     Base.metadata.create_all(bind=engine)
-    yield TestClient(app)
+
+    inspector = inspect(engine)
+    print("Tablas después de create_all:", inspector.get_table_names())
+
+    yield
+
     Base.metadata.drop_all(bind=engine)
+    print("Tablas después de drop_all:", inspect(engine).get_table_names())
+
+# ----------------------------
+# Fixture para la sesión de DB
+# ----------------------------
+@pytest.fixture()
+def db_session():
+    session = TestingSessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
+
+# ----------------------------
+# Fixture para cliente FastAPI
+# ----------------------------
+from fastapi.testclient import TestClient
+
+@pytest.fixture()
+def client(db_session):
+    # Sobrescribimos la dependencia get_db para usar la sesión de test
+    def override_get_db():
+        try:
+            yield db_session
+        finally:
+            pass
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    yield client
+    app.dependency_overrides.clear()
