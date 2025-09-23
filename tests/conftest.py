@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.main import app
+from app import app
 from src.database import get_db
 from src.models import Base
 from src.models import User  # <-- ESTA LÍNEA ES CRUCIAL
