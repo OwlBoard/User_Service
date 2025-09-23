@@ -38,3 +38,5 @@ passlib[bcrypt]
 
 # Para manejar los JWT (JSON Web Tokens)
 python-jose[cryptography] 
+
+httpx
