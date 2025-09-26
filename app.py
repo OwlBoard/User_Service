@@ -8,6 +8,9 @@ from src.routes.users_routes import router as user_router
 
 app = FastAPI()
 
+# Create tables on startup
+Base.metadata.create_all(bind=engine)
+
 # Registrar rutas
 app.include_router(user_router, prefix="/users", tags=["Users"])
 
