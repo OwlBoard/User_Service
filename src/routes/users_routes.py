@@ -1,22 +1,26 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Form
 from sqlalchemy.orm import Session
 from src import models, schemas
 from src.database import get_db
-from passlib.context import CryptContext
+import bcrypt
 from src.models import User
 
 router = APIRouter(tags=["Users"])
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    # Convert password to bytes and hash with bcrypt
+    password_bytes = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password_bytes, salt)
+    return hashed.decode('utf-8')
 
-def verify_password(plain_password, hashed_password) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    # Convert passwords to bytes for bcrypt verification
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 # POST crear usuario
 @router.post("/register")
-def register(email: str, password: str, full_name: str = None, db: Session = Depends(get_db)):
+def register(email: str = Form(...), password: str = Form(...), full_name: str = Form(None), db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="El usuario ya existe")
@@ -30,7 +34,7 @@ def register(email: str, password: str, full_name: str = None, db: Session = Dep
     return {"message": f"Usuario {new_user.email} registrado con éxito", "id": new_user.id}
 
 @router.post("/login")
-def login(email: str, password: str, db: Session = Depends(get_db)):
+def login(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == email).first()
     if not user:
         raise HTTPException(status_code=400, detail="Usuario no encontrado")
