@@ -33,7 +33,7 @@ RUN pip install --no-cache /wheels/*
 
 # Copy your application source code into the container
 # This assumes your code will be inside an "app/" directory
-COPY ./app ./app
+COPY . .
 
 # Expose the port that the Uvicorn server will run on
 EXPOSE 8000
@@ -41,4 +41,4 @@ EXPOSE 8000
 # The command to run your application
 # This tells uvicorn to run the "app" object inside the "main.py" file.
 # --host 0.0.0.0 makes it accessible from outside the container.
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

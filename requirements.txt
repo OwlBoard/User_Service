@@ -3,11 +3,17 @@
 # Web Framework
 fastapi
 
+# Form data support for FastAPI
+python-multipart
+
 # ASGI Server to run FastAPI
 uvicorn[standard]
 
 # Database Object-Relational Mapper (ORM)
 sqlalchemy
+
+# Password hashing
+bcrypt
 
 # black: Automatic Python code formatter to maintain a consistent style.
 black
@@ -26,3 +32,17 @@ python-json-logger
 
 # mysql-connector-python: Driver to connect Python applications with MySQL databases.
 mysql-connector-python
+
+# Driver para conectar con MySQL
+pymysql           
+
+# Para validación de datos y emails
+pydantic[email]  
+
+# Para hashear contraseñas de forma segura  
+passlib[bcrypt]    
+
+# Para manejar los JWT (JSON Web Tokens)
+python-jose[cryptography] 
+
+httpx

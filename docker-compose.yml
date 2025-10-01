@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  mysql_db:
+    image: mysql:8
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: user_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  user_service:
+    build: .
+    container_name: user_service
+    restart: always
+    depends_on:
+      - mysql_db
+    ports:
+      - "5000:8000"  # accedes con localhost:5000
+    environment:
+      DATABASE_URL: "mysql+pymysql://user:password@mysql_db/user_db"
+
+volumes:
+  mysql_data:
