@@ -3,10 +3,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-# Deberías cargar esto desde tu config.py o variables de entorno
-DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://user:password@mysql_db/user_db")
+# Database URL from environment variable (MySQL in Docker, SQLite fallback for local dev)
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
