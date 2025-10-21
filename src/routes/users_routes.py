@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Form
 from sqlalchemy.orm import Session
-from src import models, schemas
+from src import models, schemas, rabbitmq_client
 from src.database import get_db
 import bcrypt
 from src.models import User
+import uuid
 
 router = APIRouter(tags=["Users"])
 
@@ -106,3 +107,25 @@ def get_user_dashboards(user_id: int, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return user.dashboards
+
+# POST crear dashboard para un usuario
+@router.post("/{user_id}/dashboards", response_model=schemas.DashboardOut, status_code=status.HTTP_201_CREATED)
+def create_dashboard_for_user(user_id: int, dashboard: schemas.DashboardCreate, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    try:
+        canvas_id = str(uuid.uuid4())
+        
+        message = {"canvas_id": canvas_id, "user_id": str(user_id)}
+        rabbitmq_client.publish_message(message)
+        
+    except ConnectionError as e:
+        raise HTTPException(status_code=503, detail=f"No se pudo comunicar con el servicio de mensajería: {e}")
+    
+    db_dashboard = models.Dashboard(**dashboard.model_dump(), owner_id=user_id, canvas_id=canvas_id)
+    db.add(db_dashboard)
+    db.commit()
+    db.refresh(db_dashboard)
+    return db_dashboard
