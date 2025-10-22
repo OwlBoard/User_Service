@@ -15,12 +15,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",  # Old React frontend (if still needed)
-        "http://localhost:3001",  # Mobile frontend
-        "http://localhost:3002",  # Next.js frontend
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        "http://127.0.0.1:3002",
+        "http://localhost:3000",  # React development server
+        "http://127.0.0.1:3000",  # Alternative localhost format
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
