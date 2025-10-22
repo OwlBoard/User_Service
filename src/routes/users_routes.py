@@ -115,17 +115,23 @@ def create_dashboard_for_user(user_id: int, dashboard: schemas.DashboardCreate, 
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    try:
-        canvas_id = str(uuid.uuid4())
-        
-        message = {"canvas_id": canvas_id, "user_id": str(user_id)}
-        rabbitmq_client.publish_message(message)
-        
-    except ConnectionError as e:
-        raise HTTPException(status_code=503, detail=f"No se pudo comunicar con el servicio de mensajería: {e}")
-    
-    db_dashboard = models.Dashboard(**dashboard.model_dump(), owner_id=user_id, canvas_id=canvas_id)
+    # Create dashboard first to get the ID
+    db_dashboard = models.Dashboard(**dashboard.model_dump(), owner_id=user_id, canvas_id="temp")
     db.add(db_dashboard)
     db.commit()
     db.refresh(db_dashboard)
+    
+    # Use dashboard ID as canvas ID
+    canvas_id = str(db_dashboard.id)
+    db_dashboard.canvas_id = canvas_id
+    db.commit()
+    db.refresh(db_dashboard)
+    
+    try:
+        message = {"canvas_id": canvas_id, "user_id": str(user_id)}
+        rabbitmq_client.publish_message(message)
+    except ConnectionError as e:
+        # Canvas will be created later or can be manually synced
+        logging.warning(f"Could not send canvas creation message: {e}")
+    
     return db_dashboard
