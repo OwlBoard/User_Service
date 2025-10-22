@@ -46,3 +46,5 @@ passlib[bcrypt]
 python-jose[cryptography] 
 
 httpx
+
+pika==1.3.2
