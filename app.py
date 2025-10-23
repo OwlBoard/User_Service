@@ -1,6 +1,6 @@
 # src/app.py
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+# from fastapi.middleware.cors import CORSMiddleware # No longer needed
 from src.models import Base
 from src.database import engine
 from src.routes.users_routes import router as user_router
@@ -11,21 +11,21 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configure CORS for frontend communication
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",  # Old React frontend (if still needed)
-        "http://localhost:3001",  # Mobile frontend
-        "http://localhost:3002",  # Next.js frontend
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        "http://127.0.0.1:3002",
-    ],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-)
+# CORS is now handled by the NGINX gateway
+# origins = [
+#     "http://localhost",
+#     "http://localhost:3000",
+#     "http://localhost:8080",
+# ]
+# 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
 
 # Create tables on startup
 Base.metadata.create_all(bind=engine)
