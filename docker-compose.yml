@@ -29,8 +29,8 @@ services:
       DATABASE_URL: "mysql+pymysql://user:password@mysql_db/user_db"
     
     volumes: # <--- CAMBIO 2: AÑADIDA ESTA SECCIÓN
-      - ../Secure_Canal/certs/user_service/server.crt:/etc/ssl/certs/server.crt:ro
-      - ../Secure_Canal/certs/user_service/server.key:/etc/ssl/private/server.key:ro
+      - ../Secure_Channel/certs/user_service/server.crt:/etc/ssl/certs/server.crt:ro
+      - ../Secure_Channel/certs/user_service/server.key:/etc/ssl/private/server.key:ro
       
     networks: # <--- CAMBIO 3: AÑADIDA ESTA SECCIÓN
       - user_internal_net # <--- Red para hablar con la BD
