@@ -12,7 +12,11 @@ uvicorn[standard]
 # Database Object-Relational Mapper (ORM)
 sqlalchemy
 
-# Password hashing
+# HTTP client for Auth Service communication
+httpx
+
+# Password hashing (upgraded to support bcrypt properly)
+passlib[bcrypt]
 bcrypt
 
 # black: Automatic Python code formatter to maintain a consistent style.
