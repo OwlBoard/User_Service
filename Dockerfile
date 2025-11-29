@@ -40,11 +40,9 @@ RUN mkdir -p /etc/ssl/private /etc/ssl/certs && \
     chmod 755 /etc/ssl/private /etc/ssl/certs
 
 # Expose the port that the Uvicorn server will run on
-EXPOSE 8443
+EXPOSE 8000
 
 # The command to run your application
 # This tells uvicorn to run the "app" object inside the "main.py" file.
 # --host 0.0.0.0 makes it accessible from outside the container.
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8443", \
-     "--ssl-keyfile", "/etc/ssl/private/server.key", \
-     "--ssl-certfile", "/etc/ssl/certs/server.crt"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
