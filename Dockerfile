@@ -35,14 +35,17 @@ RUN pip install --no-cache /wheels/*
 # This assumes your code will be inside an "app/" directory
 COPY . .
 
-# Create directories for SSL certificates with proper permissions
-RUN mkdir -p /etc/ssl/private /etc/ssl/certs && \
-    chmod 755 /etc/ssl/private /etc/ssl/certs
+# Create non-root user and SSL directories with proper permissions
+RUN useradd -m -u 1000 userservice && \
+    mkdir -p /etc/ssl/private /etc/ssl/certs && \
+    chown -R userservice:userservice /app /etc/ssl/private /etc/ssl/certs
 
-# Expose the port that the Uvicorn server will run on
-EXPOSE 8000
+USER userservice
 
-# The command to run your application
-# This tells uvicorn to run the "app" object inside the "main.py" file.
-# --host 0.0.0.0 makes it accessible from outside the container.
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Expose the port for HTTPS with mTLS
+EXPOSE 8443
+
+# Run the application with SSL/TLS enabled
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8443", \
+     "--ssl-keyfile", "/etc/ssl/private/server.key", \
+     "--ssl-certfile", "/etc/ssl/certs/server.crt"]
