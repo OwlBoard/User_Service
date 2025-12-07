@@ -14,6 +14,8 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks: # <--- AÑADIDO (Opcional, pero bueno para la red interna)
+      - user_internal_net # <--- AÑADIDO
 
   user_service:
     build: .
@@ -22,9 +24,23 @@ services:
     depends_on:
       - mysql_db
     ports:
-      - "5000:8000"  # accedes con localhost:5000
+      - "5000:8443"  # <--- CAMBIO 1: De 8000 a 8443 (nuestro puerto SSL)
     environment:
       DATABASE_URL: "mysql+pymysql://user:password@mysql_db/user_db"
+    
+    volumes: # <--- CAMBIO 2: AÑADIDA ESTA SECCIÓN
+      - ../Secure_Channel/certs/user_service/server.crt:/etc/ssl/certs/server.crt:ro
+      - ../Secure_Channel/certs/user_service/server.key:/etc/ssl/private/server.key:ro
+      
+    networks: # <--- CAMBIO 3: AÑADIDA ESTA SECCIÓN
+      - user_internal_net # <--- Red para hablar con la BD
+      - owlboard-network  # <--- Red para hablar con el API Gateway
 
 volumes:
   mysql_data:
+
+networks: # <--- CAMBIO 3 (continuación): AÑADIDA ESTA SECCIÓN
+  user_internal_net: # <--- Define la red interna para la BD
+    internal: true
+  owlboard-network:  # <--- Define la red externa de los otros servicios
+    external: true
