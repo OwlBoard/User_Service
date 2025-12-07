@@ -31,13 +31,9 @@ class DashboardBase(BaseModel):
     title: str = Field(..., example="Mi Tablero")
     description: Optional[str] = Field(None, example="Descripción del tablero")
 
-class DashboardCreate(DashboardBase):
-    pass
-
 class DashboardOut(DashboardBase):
     id: int
     owner_id: int
-    canvas_id: str
 
     class Config:
         orm_mode = True
