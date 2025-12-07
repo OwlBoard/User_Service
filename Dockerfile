@@ -35,6 +35,10 @@ RUN pip install --no-cache /wheels/*
 # This assumes your code will be inside an "app/" directory
 COPY . .
 
+# Create directories for SSL certificates with proper permissions
+RUN mkdir -p /etc/ssl/private /etc/ssl/certs && \
+    chmod 755 /etc/ssl/private /etc/ssl/certs
+
 # Expose the port that the Uvicorn server will run on
 EXPOSE 8000
 

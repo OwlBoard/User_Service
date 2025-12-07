@@ -10,6 +10,10 @@ class UserCreate(BaseModel):
     email: EmailStr = Field(..., example="user@example.com")
     full_name: str = Field(..., example="Daniel Delgado")
     password: str = Field(..., min_length=6, example="secret123")
+
+class UserLogin(BaseModel):
+    email: EmailStr = Field(..., example="user@example.com")
+    password: str = Field(..., min_length=1, example="secret123")
     
 class UserUpdate(BaseModel):
     full_name: Optional[str] = Field(None, example="Nuevo Nombre")
